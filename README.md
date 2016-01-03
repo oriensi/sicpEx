@@ -1,2 +1,3 @@
 # sicpEx
-the ex of SICP
+SICP的练习题
+嘛 之后应该会混些其它东西吧，随便写写
