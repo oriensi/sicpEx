@@ -35,3 +35,27 @@
     (div-interval one
                   (add-interval (div-interval one r1)
                                 (div-interval one r2)))))
+
+
+(define (append list1 list2)
+  (if (null? list1)
+      list2
+      (cons (car list1) (append (cdr list1) list2))))
+;; 2.17
+(define (last-pair items)
+  (cond ((null? items)       '())
+        ((null? (cdr items))  items)
+        (else (last-pair (cdr items)))))
+;; 2.18
+(define (reverse items)
+  (define (reverse-item org obj)
+    (if (null? org)
+        obj
+        (reverse-item (cdr org) (cons (car org) obj))))
+  (reverse-item items '()))
+;; 利用 append 构建形如
+;; (append (append (cdr ()) (cons '())) (cons '()))
+(define (reverse-d items)
+  (if (null? items)
+      '()
+      (append (reverse-d (cdr items)) (cons (car items) '()))))
