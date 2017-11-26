@@ -67,3 +67,51 @@
   (/ (+ x y) 2))
 (define (sqrt x)
   (sqrt-iter 1.0 x))
+
+(define (sqrt-1 x)
+  (define (good-enough? guess x)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess x)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess x)
+    (if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x)))
+  (sqrt-iter 1.0 x))
+
+(define (sqrt-2 x)
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess))))
+  (sqrt-iter 1.0))
+
+
+
+;; (define (+ a b)
+;;   (if (= a 0)
+;;       b
+;;       (inc (+ (dec a) b))))
+;; (+ 4 5)
+;; (inc (+ (dec 4) 5))
+;; (inc (+ 3 5))
+;; (inc (inc (+ (dec 3) 5)))
+;; (inc (inc (+ 2 5)))
+;; (inc (inc (inc (+ (dec 2) 5))))
+;; (inc (inc (inc (+ 1 5))))
+;; (inc (inc (inc (inc (+ 0 5)))))
+;; (inc (inc (inc (inc 5))))
+
+;; (define (+ a b)
+;;   (if (= a 0)
+;;       b
+;;       (+ (dec a) (inc b))))
+;; (+ 4 5)
+;; (+ 3 6)
+;; (+ 2 7)
+;; (+ 1 8)
+;; 9
