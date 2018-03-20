@@ -59,3 +59,50 @@
   (if (null? items)
       '()
       (append (reverse-d (cdr items)) (cons (car items) '()))))
+
+;; 2.20 返回所有与起始元素奇偶性相同的元素
+(define (if-append x y)
+  (if (null? y)
+      '()
+      (if (x (car y))
+          (cons (car y) (if-append x (cdr y)))
+          (if-append x (cdr y)))))
+(define (same-parity . w)
+  (if (null? w)
+      '()
+      (let ((ou (remainder (car w) 2)))
+        (if-append (lambda (x) (= ou (remainder x 2))) w))))
+
+;; 2.21 map
+(define (square-list items)
+  (if (null? items)
+      '()
+      (cons (* (car items) (car items))
+            (square-list (cdr items)))))
+(define (square-list-map items)
+  (map (lambda (x) (* x x)) items))
+
+(define (count-leaves x)
+  (cond ((null? x) 0)
+        ((not (pair? x)) 1)
+        (else (+ (count-leaves (car x))
+                 (count-leaves (cdr x))))))
+
+;; 2.25 取出7
+(car (cdr (car (cdr (cdr (list 1 3 '(5 7) 9))))))
+(car (car (list (list 7))))
+(cadr (cadr (cadr (cadr (cadr (cadr (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7))))))))))))
+
+;; 2.27 deep-reverse
+(define (deep-reverse x)
+  (cond ((null? x) '())
+        ((pair? (car x)) (append (deep-reverse (cdr x)) (cons (deep-reverse (car x)) '())))
+        (else (append (deep-reverse (cdr x)) (cons (car x) '())))))
+
+;; 2.28 列出所有树叶
+(define x (list (list 1 2) (list 3 4)))
+(define (fringe x)
+  (cond ((null? x) '())
+        ((not (pair? (car x))) (cons (car x) (fringe (cdr x))))
+        (else (append (fringe (car x)) (fringe (cdr x))))))
+
