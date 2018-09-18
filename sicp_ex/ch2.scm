@@ -132,13 +132,14 @@
         (else (append (deep-reverse (cdr x)) (cons (car x) '())))))
 
 ;; 2.28 列出所有树叶
-(define x (list (list 1 2) (list 3 4)))
+;; (define x (list (list 1 2) (list 3 4)))
 (define (fringe x)
   (cond ((null? x) '())
-        ((not (pair? (car x))) (cons (car x) (fringe (cdr x))))
+        ((not (pair? x)) (list x))
         (else (append (fringe (car x)) (fringe (cdr x))))))
 
 ;; 2.29 二叉活动体, 长度 × 重量
+;; list
 (define (make-mobile left right)
   (list left right))
 (define (make-branch length structure)
@@ -151,10 +152,61 @@
   (car branch))
 (define (branch-structure branch)
   (car (cdr branch)))
+;; 2.29 cons
+;; (define (make-mobile left right)
+;;   (cons left right))
+;; (define (make-branch length structure)
+;;   (cons length structure))
+;; (define (right-branch tree)
+;;   (cdr tree))
+;; (define (branch-structure branch)
+;;   (cdr branch))
 (define (total-weight tree)
-  (+ (if (pair? (branch-structure (left-branch tree)))
-         (total-weight (branch-structure (left-branch tree)))
-         (branch-structure (left-branch tree)))
-     (if (pair? (branch-structure (right-branch tree)))
-         (total-weight (branch-structure (right-branch tree)))
-         (branch-structure (right-branch tree)))))
+  (if (not (pair? tree))
+      tree
+      (+ (if (pair? (branch-structure (left-branch tree)))
+             (total-weight (branch-structure (left-branch tree)))
+             (branch-structure (left-branch tree)))
+         (if (pair? (branch-structure (right-branch tree)))
+             (total-weight (branch-structure (right-branch tree)))
+             (branch-structure (right-branch tree))))))
+(define (balence? tree)
+  (if (not (pair? tree))
+      #t
+      (if
+       (= (* (branch-length (left-branch tree))
+             (total-weight (branch-structure (left-branch tree))))
+          (* (branch-length (right-branch tree))
+             (total-weight (branch-structure (right-branch tree)))))
+       (and (balence? (branch-structure (left-branch tree)))
+            (balence? (branch-structure (right-branch tree))))
+       #f)))
+
+;; 2.30
+(define (square-tree tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (square-tree sub-tree)
+             (* sub-tree sub-tree)))
+       tree))
+
+;; 2.31
+(define (tree-map fun tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (tree-map fun sub-tree)
+             (fun sub-tree)))
+       tree))
+(define (square-tree-map tree)
+  (tree-map (lambda (x)
+              (* x x))
+            tree))
+
+;; 2.32 生成子集
+(define (subsets s)
+  (if (null? s)
+      (list '())
+      (let ((rest (subsets (cdr s))))
+        (append rest (map (lambda (x)
+                            (cons (car s) x))
+                          rest)))))
