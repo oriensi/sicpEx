@@ -210,3 +210,74 @@
         (append rest (map (lambda (x)
                             (cons (car s) x))
                           rest)))))
+;; (subsets (list 1 2 3))
+;; (() (3) (2) (2 3) (1) (1 3) (1 2) (1 2 3))
+
+;; 2.33
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
+(define (map2 p sequence)
+  (accumulate (lambda (x y) (cons (p x) y)) '() sequence))
+(define (append2 seq1 seq2)
+  (accumulate cons seq2 seq1))
+(define (length2 sequence)
+  (accumulate (lambda (x y) (+ 1 y)) 0 sequence))
+(define (square-tree2 tree)
+  (map2
+   (lambda (sub-tree)
+     (if (pair? sub-tree)
+         (square-tree2 sub-tree)
+         (* sub-tree sub-tree)))
+   tree))
+;; (square-tree2 (list 1 (list 2 (list 3 4) 5) (list 6 7)))
+;; (1 (4 (9 16) 25) (36 49))
+
+;; 2.34
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms)
+                (+ this-coeff (* x higher-terms)))
+              0
+              coefficient-sequence))
+;; (horner-eval 2 (list 1 3 0 5 0 1)) ; 当x=2时, 1 + 3x + 5x^3 + x^5
+;; 79
+
+;; 2.35
+(define (count-leaves2 t)
+  (accumulate (lambda (x y)
+                (+ x y))                ; 累积每个子树的叶子数
+              0
+              (map (lambda (x)
+                     (if (pair? x)
+                         (count-leaves2 x)
+                         1))
+                   t)))
+;; (count-leaves2 (cons (list 1 2) (list 3 4)))
+;; 4
+
+;; 2.36
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      '()
+      (cons (accumulate op init (map (lambda (x)
+                                       (car x))
+                                     seqs))
+            (accumulate-n op init (map (lambda (x)
+                                         (cdr x))
+                                       seqs)))))
+;; (define n (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
+;; (accumulate-n + 0 n)
+;; (22 26 30)
+
+;; 2.37
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+;; (define (matrix-*-vector m v)
+;;   (map <??> m))
+;; (define (transpose mat)
+;;   (accumulate-n <??> <??> mat))
+;; (define (matrix-*-matrix m n)
+;;   (let ((cols (transpose n)))
+;;     (map <??> m)))
