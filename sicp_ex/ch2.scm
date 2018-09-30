@@ -1,3 +1,4 @@
+(define nil '())
 ;; 2.7
 (define (make-center-interval m n)
   (make-interval (- m n) (+ m n)))
@@ -294,3 +295,24 @@
     (map (lambda (row)
            (matrix-*-vector cols row))
          m)))
+
+;; 2.38
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+(define fold-right accumulate)
+;; 如需要 fold-left fold-right 执行如果相同 op 需要满足「交换律」交换操作符两边的操作数不影响运算结果
+
+;; 2.39
+(define (reverse sequence)
+  (fold-right (lambda (x y)
+                (if (null? y)
+                    (list x)
+                    (append y (cons x nil))))
+              nil sequence))
+;; (define (reverse sequence)
+;;   (fold-left (lambda (x y) (cons y x)) nil sequence))
