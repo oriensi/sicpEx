@@ -316,3 +316,72 @@
               nil sequence))
 ;; (define (reverse sequence)
 ;;   (fold-left (lambda (x y) (cons y x)) nil sequence))
+
+;; 嵌套映射
+(define (enumerate-interval start end)
+  (define (range ret start end)
+    (cond
+     ((> start end) nil)
+     ((= start end) (cons start ret))
+     (else (range (cons end ret) start (- end 1)))))
+  (range nil start end))
+
+;; (accumulate append
+;;             nil
+;;             (map (lambda (i)
+;;                    (map (lambda (j) (list i j)) ; (() /* 1时nil */ ((2 1)) /* 2时(2 1) */ ...)
+;;                         (enumerate-interval 1 (- i 1))))
+;;                  (enumerate-interval 1 n))) ; (1 2 3)
+(define (flatmap proc seq)
+  (accumulate append nil (map proc seq)))
+(define (prime? x)
+  (define (match? i)
+    (cond ((= i x) #t)
+          ((> (* i i) x) #t)
+          ((= (remainder x i) 0) #f)
+          (else (match? (+ i 1)))))
+  (match? 2))
+(define (prime-sum? pair)
+  (prime? (+ (car pair) (cadr pair))))
+(define (make-pair-sum pair)
+  (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum?
+               (flatmap
+                (lambda (i)
+                  (map (lambda (j) (list i j))
+                       (enumerate-interval 1 (- i 1))))
+                (enumerate-interval 1 n)))))
+
+(define (remove x s)
+  (filter (lambda (i) (= i x)) s))
+(define (permutations s)
+  (if (null? s)
+      (list nil)
+      (flatmap (lambda (x)
+                 (map (lambda (p)
+                        (cons x p))
+                      (permutations remove x s))
+                 s))))
+
+;; 2.40
+;; (define (unique-pairs n)
+;;   (accumulate
+;;    append
+;;    nil
+;;    (map (lambda (i)
+;;           (map (lambda (j)
+;;                  (list i j))
+;;                (enumerate-interval 1 (- i 1))))
+;;         (enumerate-interval 1 n))))
+(define (unique-pairs n)
+  (flatmap (lambda (i)
+             (map (lambda (j)
+                    (list i j))
+                  (enumerate-interval 1 (- i 1))))
+           (enumerate-interval 1 n)))
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum? (unique-pairs n))))
