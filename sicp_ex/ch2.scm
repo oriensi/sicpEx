@@ -385,3 +385,29 @@
 (define (prime-sum-pairs n)
   (map make-pair-sum
        (filter prime-sum? (unique-pairs n))))
+
+;; 2.41
+(define (append-mulit-2-1-list result multi-list)
+    (cond ((null? multi-list) result)
+          ((null? (car multi-list)) (append-mulit-2-1-list result (cdr multi-list)))
+          ((not (list? (car multi-list))) (append multi-list result))
+          ((not (list? (car (car multi-list)))) (append multi-list result))
+          (else (append-mulit-2-1-list (append-mulit-2-1-list result (car multi-list)) (cdr multi-list)))))
+(define (sum-list list)
+  (define (sum-iter ret list)
+    (if (null? list)
+        ret
+        (sum-iter (+ ret (car list)) (cdr list))))
+  (sum-iter 0 list))
+(define (three-sum-equal max s)
+  (filter (lambda (i)
+            (= s (sum-list i)))
+          (append-mulit-2-1-list
+           nil
+           (flatmap (lambda (i)
+                      (map (lambda (j)
+                             (map (lambda (k)
+                                    (list i j k))
+                                  (enumerate-interval 1 (- j 1))))
+                           (enumerate-interval 1 (- i 1))))
+                    (enumerate-interval 1 max)))))
